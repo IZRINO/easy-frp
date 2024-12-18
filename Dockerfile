@@ -15,7 +15,7 @@ RUN git clone https://github.com/IZRINO/Nat-UI
 WORKDIR /usr/src/app
 
 # 使用Golang镜像
-FROM golang:latest AS go
+FROM golang:1.23 AS go
 
 # 设置Go环境变量
 ENV PATH="/usr/local/go/bin:${PATH}"
