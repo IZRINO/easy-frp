@@ -32,7 +32,8 @@ $(OUTPUT_DIR)/$(PROJECT_NAME)-%-arm64:
 # 清理命令
 clean:
 	@echo "Cleaning up..."
-	@rm -rf $(OUTPUT_DIR)
+	@rm -rf $(OUTPUT_DIR) && rm -rf dist
+	@cd web && pnpm clean
 
 # 默认目标
 .PHONY: build clean
