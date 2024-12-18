@@ -1,11 +1,5 @@
-# Astro + Vue Example
-这是一个Astro + Vue + shadcn-vue + Tauri的初始模板
+# NAT-UI
 
-This is an initial template for Astro + Vue + shadcn-vue + Tauri.
+这是一个用于简化网络穿透操作的项目，提供一个服务器页面与一个客户端应用
 
-使用此模板:
-
-Using this template:
-```sh
-pnpm create astro@latest --template IZRINO/astro-vue-template#tauri-shadcn-vue
-```
+这只是一个用于简化操作并提供一个好看的界面的项目，内核是 [`frp`](https://github.com/fatedier/frp) 与 [`bore`](https://github.com/ekzhang/bore)
