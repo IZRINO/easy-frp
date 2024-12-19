@@ -1,50 +1,72 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
-	"net/http"
-	"os/exec"
-	"runtime"
+	"net"
+	"os"
+
+	"github.com/gin-gonic/gin"
+	"github.com/pkg/browser"
 )
 
 func main() {
-	// 创建一个文件服务器，用于提供静态文件
-	fs := http.FileServer(http.Dir("./dist"))
+	// 从命令行接收端口参数
+	var port string
+	flag.StringVar(&port, "port", "9999", "HTTP服务器端口")
+	flag.Usage = func() {
+		log.Printf("使用方法 %s：\n", os.Args[0])
+		flag.PrintDefaults()
+	}
+	flag.Parse()
 
-	// 使用 http.StripPrefix 去掉 /dist 前缀
-	http.Handle("/", http.StripPrefix("/", fs))
+	// 创建一个 Gin 路由器
+	r := gin.Default()
 
+	// 提供静态文件服务
+	r.Static("/", "./dist")
+
+	// 获取本地IP地址
+	ip, err := getLocalIP()
+	if err != nil {
+		log.Fatal(err)
+	}
 	// 启动 HTTP 服务器
-	port := "8080"
 	go func() {
-		fmt.Printf("Server is running on http://localhost:%s\n", port)
-		if err := http.ListenAndServe(":"+port, nil); err != nil {
+		if err := r.Run(ip + ":" + port); err != nil {
 			log.Fatal(err)
 		}
 	}()
+	url := fmt.Sprintf("http://%s:%s", ip, port)
 
 	// 自动打开浏览器
-	openBrowser("http://localhost:" + port)
+	openBrowser(url)
 
 	// 保持程序运行
 	select {}
 }
 
+// 获取本地IP地址
+func getLocalIP() (string, error) {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return "", err
+	}
+	for _, address := range addrs {
+		// 检查ip地址判断是否回环地址
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String(), nil
+			}
+		}
+	}
+	return "", fmt.Errorf("无法获取本地IP地址")
+}
+
 // 打开浏览器
 func openBrowser(url string) {
-	var err error
-	switch runtime.GOOS {
-	case "linux":
-		err = exec.Command("xdg-open", url).Start()
-	case "windows":
-		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
-	case "darwin":
-		err = exec.Command("open", url).Start()
-	default:
-		err = fmt.Errorf("unsupported platform")
-	}
-	if err != nil {
+	if err := browser.OpenURL(url); err != nil {
 		log.Fatal(err)
 	}
 }
