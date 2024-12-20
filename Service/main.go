@@ -1,15 +1,20 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/browser"
 )
+
+//go:embed dist/*
+var dist embed.FS
 
 func main() {
 	// 从命令行接收端口参数
@@ -24,20 +29,22 @@ func main() {
 	// 创建一个 Gin 路由器
 	r := gin.Default()
 
-	// 提供静态文件服务
-	r.Static("/", "./dist")
+	// 将嵌入的 dist 文件夹内容提供为静态文件服务
+	r.StaticFS("/", http.FS(dist))
 
 	// 获取本地IP地址
 	ip, err := getLocalIP()
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	// 启动 HTTP 服务器
 	go func() {
 		if err := r.Run(ip + ":" + port); err != nil {
 			log.Fatal(err)
 		}
 	}()
+
 	url := fmt.Sprintf("http://%s:%s", ip, port)
 
 	// 自动打开浏览器

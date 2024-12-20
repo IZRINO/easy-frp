@@ -5,10 +5,10 @@ PROJECT_NAME := Service
 VERSION := 0.0.1
 
 # 目标平台
-TARGETS := windows linux darwin
+TARGETS := windows linux
 
 # 目标架构
-ARCHS := amd64 arm64
+ARCHS := amd64 arm64 386
 
 # 输出目录
 OUTPUT_DIR := target
@@ -17,20 +17,10 @@ OUTPUT_DIR := target
 build: $(foreach target,$(TARGETS),$(foreach arch,$(ARCHS),$(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-$(target)-$(arch)))
 
 # 构建规则
-$(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-windows-%:
-	@echo "Building for windows $*"
+$(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-%:
+	@echo "Building for $*"
 	@mkdir -p $(OUTPUT_DIR)
-	@GOOS=windows GOARCH=$* go build -o $(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-windows-$*.exe main.go
-
-$(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-linux-%:
-	@echo "Building for linux $*"
-	@mkdir -p $(OUTPUT_DIR)
-	@GOOS=linux GOARCH=$* go build -o $(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-linux-$* main.go
-
-$(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-darwin-%:
-	@echo "Building for darwin $*"
-	@mkdir -p $(OUTPUT_DIR)
-	@GOOS=darwin GOARCH=$* go build -o $(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-darwin-$* main.go
+	@GOOS=$(firstword $(subst -, ,$*)) GOARCH=$(lastword $(subst -, ,$*)) go build -o $(if $(findstring windows,$(firstword $(subst -, ,$*))),$@.exe,$@) main.go
 
 # 清理命令
 clean:
@@ -39,5 +29,11 @@ clean:
 	@cd web && rm -rf dist
 	@echo "Cleaning complete"
 
+# 构建前端
+front:
+	@echo "Building frontend..."
+	@cd web && pnpm install && pnpm build
+	@mv web/dist .
+	@echo "Frontend build complete"
 # 默认目标
 .PHONY: build clean

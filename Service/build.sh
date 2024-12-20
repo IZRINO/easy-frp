@@ -1,3 +1,4 @@
+make clean
 cd ./web
 pnpm i
 pnpm build
