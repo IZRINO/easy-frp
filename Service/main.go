@@ -4,6 +4,7 @@ import (
 	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -14,7 +15,7 @@ import (
 )
 
 //go:embed dist/*
-var dist embed.FS
+var FS embed.FS
 
 func main() {
 	// 从命令行接收端口参数
@@ -30,7 +31,11 @@ func main() {
 	r := gin.Default()
 
 	// 将嵌入的 dist 文件夹内容提供为静态文件服务
-	r.StaticFS("/", http.FS(dist))
+	fe, err := fs.Sub(FS, "dist")
+	if err != nil {
+		log.Fatal("Failed to sub path `dist`: %v", err)
+	}
+	r.StaticFS("/", http.FS(fe))
 
 	// 获取本地IP地址
 	ip, err := getLocalIP()
