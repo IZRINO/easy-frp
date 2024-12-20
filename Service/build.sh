@@ -1,7 +1,8 @@
 cd ./web
 pnpm i
-pnpm build 
-cp dist ../
-rm -rf dist
+pnpm build
+rm -rf ../dist 
+mv -f dist/ ../
 cd ../
 make build
+rm -rf dist

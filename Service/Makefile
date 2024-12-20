@@ -1,39 +1,43 @@
 # 项目名称
 PROJECT_NAME := Service
 
+# 版本号
+VERSION := 0.0.1
+
 # 目标平台
 TARGETS := windows linux darwin
 
 # 目标架构
-ARCHS := amd64 386 arm64
+ARCHS := amd64 arm64
 
 # 输出目录
 OUTPUT_DIR := target
 
 # 构建命令
-build: $(foreach target,$(TARGETS),$(foreach arch,$(ARCHS),$(OUTPUT_DIR)/$(PROJECT_NAME)-$(target)-$(arch)))
+build: $(foreach target,$(TARGETS),$(foreach arch,$(ARCHS),$(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-$(target)-$(arch)))
 
 # 构建规则
-$(OUTPUT_DIR)/$(PROJECT_NAME)-%-amd64:
-	@echo "Building for $* amd64..."
+$(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-windows-%:
+	@echo "Building for windows $*"
 	@mkdir -p $(OUTPUT_DIR)
-	@GOOS=$* GOARCH=amd64 go build -o $(OUTPUT_DIR)/$(PROJECT_NAME)-$*-amd64 main.go
+	@GOOS=windows GOARCH=$* go build -o $(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-windows-$*.exe main.go
 
-$(OUTPUT_DIR)/$(PROJECT_NAME)-%-386:
-	@echo "Building for $* 386..."
+$(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-linux-%:
+	@echo "Building for linux $*"
 	@mkdir -p $(OUTPUT_DIR)
-	@GOOS=$* GOARCH=386 go build -o $(OUTPUT_DIR)/$(PROJECT_NAME)-$*-386 main.go
+	@GOOS=linux GOARCH=$* go build -o $(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-linux-$* main.go
 
-$(OUTPUT_DIR)/$(PROJECT_NAME)-%-arm64:
-	@echo "Building for $* arm64..."
+$(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-darwin-%:
+	@echo "Building for darwin $*"
 	@mkdir -p $(OUTPUT_DIR)
-	@GOOS=$* GOARCH=arm64 go build -o $(OUTPUT_DIR)/$(PROJECT_NAME)-$*-arm64 main.go
+	@GOOS=darwin GOARCH=$* go build -o $(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-darwin-$* main.go
 
 # 清理命令
 clean:
 	@echo "Cleaning up..."
 	@rm -rf $(OUTPUT_DIR) && rm -rf dist
-	@cd web && pnpm clean
+	@cd web && rm -rf dist
+	@echo "Cleaning complete"
 
 # 默认目标
 .PHONY: build clean
