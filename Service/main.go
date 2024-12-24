@@ -4,7 +4,6 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"io/fs"
 	"log"
 	"net"
 	"net/http"
@@ -32,12 +31,10 @@ func main() {
 	app := fiber.New()
 
 	// 将嵌入的 dist 文件夹内容提供为静态文件服务
-	fe, err := fs.Sub(FS, "dist")
-	if err != nil {
-		log.Fatalf("Failed to sub path `dist`: %v", err)
-	}
 	app.Use("/", filesystem.New(filesystem.Config{
-		Root: http.FS(fe),
+		Root:       http.FS(FS),
+		PathPrefix: "dist",
+		MaxAge:     3600, // 设置缓存控制头，缓存时间为1小时
 	}))
 
 	// 获取本地IP地址
@@ -54,7 +51,9 @@ func main() {
 	}()
 
 	// 自动打开浏览器
-	openBrowser(url)
+	if err := browser.OpenURL(url); err != nil {
+		log.Fatal(err)
+	}
 
 	//保持运行
 	select {}
@@ -75,11 +74,4 @@ func getLocalIP() (string, error) {
 		}
 	}
 	return "", fmt.Errorf("无法获取本地IP地址")
-}
-
-// 打开浏览器
-func openBrowser(url string) {
-	if err := browser.OpenURL(url); err != nil {
-		log.Fatal(err)
-	}
 }
