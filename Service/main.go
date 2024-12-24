@@ -4,12 +4,12 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/pkg/browser"
 )
@@ -22,7 +22,7 @@ func main() {
 	var port string
 	flag.StringVar(&port, "port", "9999", "HTTP服务器端口")
 	flag.Usage = func() {
-		log.Printf("使用方法 %s：\n", os.Args[0])
+		fmt.Printf("使用方法 %s：\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 	flag.Parse()
@@ -47,12 +47,12 @@ func main() {
 
 	// 启动 HTTP 服务器
 	go func() {
-		log.Fatal(app.Listen(":" + port))
+		log.Panic(app.Listen(":" + port))
 	}()
 
 	// 自动打开浏览器
 	if err := browser.OpenURL(url); err != nil {
-		log.Fatal(err)
+		log.Error(err)
 	}
 
 	//保持运行
