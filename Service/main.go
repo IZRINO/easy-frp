@@ -10,7 +10,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/pkg/browser"
 )
 
@@ -27,15 +28,17 @@ func main() {
 	}
 	flag.Parse()
 
-	// 创建一个 Gin 路由器
-	r := gin.Default()
+	//创建fiber应用
+	app := fiber.New()
 
 	// 将嵌入的 dist 文件夹内容提供为静态文件服务
 	fe, err := fs.Sub(FS, "dist")
 	if err != nil {
-		log.Fatal("Failed to sub path `dist`: %v", err)
+		log.Fatalf("Failed to sub path `dist`: %v", err)
 	}
-	r.StaticFS("/", http.FS(fe))
+	app.Use("/", filesystem.New(filesystem.Config{
+		Root: http.FS(fe),
+	}))
 
 	// 获取本地IP地址
 	ip, err := getLocalIP()
@@ -43,19 +46,17 @@ func main() {
 		log.Fatal(err)
 	}
 
+	url := fmt.Sprintf("http://%s:%s", ip, port)
+
 	// 启动 HTTP 服务器
 	go func() {
-		if err := r.Run(ip + ":" + port); err != nil {
-			log.Fatal(err)
-		}
+		log.Fatal(app.Listen(":" + port))
 	}()
-
-	url := fmt.Sprintf("http://%s:%s", ip, port)
 
 	// 自动打开浏览器
 	openBrowser(url)
 
-	// 保持程序运行
+	//保持运行
 	select {}
 }
 
