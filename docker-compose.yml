@@ -1,0 +1,13 @@
+version: '3'
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/code/NAT-UI  # 挂载当前目录到容器中的 /code/NAT-UI
+    ports:
+      - "4321:4321"
+      - "9999:9999"
+    stdin_open: true
+    tty: true
