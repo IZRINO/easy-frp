@@ -3,6 +3,12 @@
 # 使用官方的Ubuntu镜像作为基础
 FROM ubuntu:22.04 AS dev
 
+LABEL author="IZRINO sxnull@163.com"
+LABEL version="1.0"
+LABEL description="此项目的开发容器镜像"
+LABEL build-date="2025-1-3"
+LABEL environment="dev"
+
 SHELL ["/bin/bash","-c"]
 
 # 更新包列表并安装必要的工具
