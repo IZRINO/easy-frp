@@ -34,16 +34,19 @@ WORKDIR /usr/local/
 RUN wget -q https://mirrors.cloud.tencent.com/nodejs-release/v22.12.0/node-v22.12.0-linux-x64.tar.xz \
     && tar xf node-v22.12.0-linux-x64.tar.xz \
     && mv node-v22.12.0-linux-x64 node \
-    && rm -rf node-v22.12.0-linux-x64.tar.xz \  
+    && rm -rf node-v22.12.0-linux-x64.tar.xz \
     # 下载安装GO
     && wget -q https://golang.google.cn/dl/go1.23.4.linux-amd64.tar.gz \
     && tar zxf go1.23.4.linux-amd64.tar.gz \
     && rm -rf go1.23.4.linux-amd64.tar.gz  \
     # 设置npm镜像
     && npm config set registry https://mirrors.cloud.tencent.com/npm/ \
+    # && npm config set registry https://registry.npmmirror.com \
     && npm config set strict-ssl false \
     && npm config delete proxy && npm config delete https-proxy \
-    && npm install -g pnpm@9.15.2  # 安装pnpm
+    && npm install -g pnpm@9.15.2  # 安装pnpm \
+    && pnpm config set registry https://mirrors.cloud.tencent.com/npm/
+# && pnpm config set registry https://registry.npmmirror.com
 
 # 设置Go环境变量
 ENV PATH="/usr/local/go/bin:${PATH}"
@@ -55,7 +58,7 @@ WORKDIR /code/NAT-UI
 
 RUN go env -w GO111MODULE=on \
     && go env -w GOPROXY=https://mirrors.cloud.tencent.com/go/,direct
-
+# && go env -w GOPROXY=https://goproxy.cn,direct
 # 默认命令
 CMD ["/bin/bash"]
 
