@@ -27,9 +27,7 @@ build-%-%:
 $(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-%:
 	@echo "Building for $*"
 	@mkdir -p $(OUTPUT_DIR)
-	@if [ "$(firstword $(subst -, ,$*))" = "darwin" ] && [ "$(lastword $(subst -, ,$*))" = "386" ]; then \
-		echo "Skipping darwin-386 build"; \
-	else \
+	@if [ ! "$(firstword $(subst -, ,$*))" = "darwin" ] || [ ! "$(lastword $(subst -, ,$*))" = "386" ]; then \
 		GOOS=$(firstword $(subst -, ,$*)) GOARCH=$(lastword $(subst -, ,$*)) go build -o $(if $(findstring windows,$(firstword $(subst -, ,$*))),$@.exe,$@) main.go; \
 	fi
 
@@ -37,7 +35,7 @@ $(OUTPUT_DIR)/$(PROJECT_NAME)-$(VERSION)-%:
 clean:
 	@echo "Cleaning up..."
 	@rm -rf $(OUTPUT_DIR) && rm -rf dist
-	@cd web && rm -rf dist
+	@cd web && rm -rf dist && rm -rf .astro && rm -rf node_modules
 	@echo "Cleaning complete"
 
 # 构建前端
