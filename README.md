@@ -4,6 +4,8 @@
 
 这只是一个用于简化操作并提供一个好看的界面的项目，内核是 [`frp`](https://github.com/fatedier/frp) 与 [`bore`](https://github.com/ekzhang/bore)
 
+[frp文档](https://gofrp.org/zh-cn/)
+
 # 开发环境
 根目录下使用此命令启动开发环境
 ```shell
