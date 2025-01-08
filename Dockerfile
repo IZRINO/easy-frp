@@ -44,7 +44,7 @@ RUN wget -q https://mirrors.cloud.tencent.com/nodejs-release/v22.12.0/node-v22.1
     # && npm config set registry https://registry.npmmirror.com \
     && npm config set strict-ssl false \
     && npm config delete proxy && npm config delete https-proxy \
-    && npm install -g pnpm@9.15.2  # 安装pnpm \
+    && npm install -g pnpm@latest-10  # 安装pnpm \
     && pnpm config set registry https://mirrors.cloud.tencent.com/npm/
 # && pnpm config set registry https://registry.npmmirror.com
 
