@@ -53,6 +53,7 @@ ENV PATH="/usr/local/go/bin:${PATH}"
 ENV GOPATH="/go"
 ENV PATH="${GOPATH}/bin:${PATH}"
 
+VOLUME /code/NAT-UI
 # 设置工作目录
 WORKDIR /code/NAT-UI
 
