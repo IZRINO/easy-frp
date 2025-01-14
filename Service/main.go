@@ -11,7 +11,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/pkg/browser"
 )
 
 //go:embed dist/*
@@ -37,23 +36,10 @@ func main() {
 		MaxAge:     3600, // 设置缓存控制头，缓存时间为1小时
 	}))
 
-	// 获取本地IP地址
-	ip, err := getLocalIP()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	url := fmt.Sprintf("http://%s:%s", ip, port)
-
 	// 启动 HTTP 服务器
 	go func() {
 		log.Panic(app.Listen(":" + port))
 	}()
-
-	// 自动打开浏览器
-	if err := browser.OpenURL(url); err != nil {
-		log.Error(err)
-	}
 
 	//保持运行
 	select {}
